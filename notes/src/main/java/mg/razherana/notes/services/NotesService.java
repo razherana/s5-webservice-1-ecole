@@ -76,6 +76,11 @@ public class NotesService {
     return notesRepository.findByInscriptionSemestreIdAndInscriptionEtudiantId(semestreId, etudiantId);
   }
 
+  public List<Notes> findBySemestreAnnee(String annee) {
+    validateAnnee(annee);
+    return notesRepository.findByInscriptionSemestreAnnee(annee);
+  }
+
   private void validateValeur(Integer valeur) {
     if (valeur == null || valeur < 0 || valeur > 20) {
       throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_NOTE_VALUE", "valeur must be between 0 and 20", valeur);
@@ -130,5 +135,11 @@ public class NotesService {
     return etudiantRepository.findById(etudiantId)
         .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "ETUDIANT_NOT_FOUND",
             "Etudiant " + etudiantId + " not found", etudiantId));
+  }
+
+  private void validateAnnee(String annee) {
+    if (annee == null || annee.isBlank()) {
+      throw new ApiException(HttpStatus.BAD_REQUEST, "SEMESTRE_ANNEE_REQUIRED", "annee is required", annee);
+    }
   }
 }

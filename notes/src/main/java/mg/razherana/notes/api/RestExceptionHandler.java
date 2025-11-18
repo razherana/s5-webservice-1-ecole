@@ -32,9 +32,16 @@ public class RestExceptionHandler {
     return ResponseEntity.status(status).body(response);
   }
 
+  @ExceptionHandler(org.springframework.web.HttpRequestMethodNotSupportedException.class)
+  public ResponseEntity<ApiResponse<Void>> handleMethodNotSupported(org.springframework.web.HttpRequestMethodNotSupportedException exc) {
+    ApiResponse<Void> response = ApiResponse.error("ERROR", "Method not authorized", null);
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
     ex.printStackTrace();
+    
     ApiResponse<Void> response = ApiResponse.error("INTERNAL_ERROR", "Unexpected error", null);
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
   }

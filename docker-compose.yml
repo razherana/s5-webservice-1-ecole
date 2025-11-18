@@ -1,0 +1,38 @@
+services:
+  spring-boot-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: spring-app
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./notes:/app
+      - maven-repo:/root/.m2
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:13
+    container_name: postgres-db
+    environment:
+      - POSTGRES_DB=mydb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+  maven-repo:
+
+networks:
+  app-network:
+    driver: bridge

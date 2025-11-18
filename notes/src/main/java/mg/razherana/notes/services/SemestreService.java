@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
 import mg.razherana.notes.entities.Semestre;
 import mg.razherana.notes.repositories.SemestreRepository;
+import mg.razherana.notes.api.ApiException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +22,8 @@ public class SemestreService {
 
   public Semestre findById(Long id) {
     return semestreRepository.findById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Semestre not found with id: " + id));
+        .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "SEMESTER_NOT_FOUND",
+            "Semestre " + id + " not found", null));
   }
 
   public Semestre create(Semestre semestre) {

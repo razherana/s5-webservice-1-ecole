@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import lombok.RequiredArgsConstructor;
 import mg.razherana.notes.entities.AnneeScolaire;
 import mg.razherana.notes.repositories.AnneeScolaireRepository;
+import mg.razherana.notes.api.ApiException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,7 +22,8 @@ public class AnneeScolaireService {
 
   public AnneeScolaire findById(Long id) {
     return anneeScolaireRepository.findById(id)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Annee scolaire not found with id: " + id));
+        .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "SCHOOL_YEAR_NOT_FOUND",
+            "Annee scolaire " + id + " not found", null));
   }
 
   public AnneeScolaire create(AnneeScolaire anneeScolaire) {

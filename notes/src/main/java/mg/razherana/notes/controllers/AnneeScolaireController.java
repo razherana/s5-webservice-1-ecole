@@ -1,8 +1,10 @@
 package mg.razherana.notes.controllers;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,12 +12,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import mg.razherana.notes.entities.AnneeScolaire;
 import mg.razherana.notes.services.AnneeScolaireService;
+import mg.razherana.notes.api.ApiResponse;
 
 @RestController
 @RequestMapping("/api/annees-scolaires")
@@ -25,29 +27,31 @@ public class AnneeScolaireController {
   private final AnneeScolaireService anneeScolaireService;
 
   @GetMapping
-  public List<AnneeScolaire> getAll() {
-    return anneeScolaireService.findAll();
+  public ApiResponse<Map<String, List<AnneeScolaire>>> getAll() {
+    return ApiResponse.success(Map.of("anneesScolaires", anneeScolaireService.findAll()));
   }
 
   @GetMapping("/{id}")
-  public AnneeScolaire getById(@PathVariable Long id) {
-    return anneeScolaireService.findById(id);
+  public ApiResponse<Map<String, AnneeScolaire>> getById(@PathVariable Long id) {
+    return ApiResponse.success(Map.of("anneeScolaire", anneeScolaireService.findById(id)));
   }
 
   @PostMapping
-  @ResponseStatus(HttpStatus.CREATED)
-  public AnneeScolaire create(@RequestBody AnneeScolaire anneeScolaire) {
-    return anneeScolaireService.create(anneeScolaire);
+  public ResponseEntity<ApiResponse<Map<String, AnneeScolaire>>> create(@RequestBody AnneeScolaire anneeScolaire) {
+    AnneeScolaire created = anneeScolaireService.create(anneeScolaire);
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(ApiResponse.success(Map.of("anneeScolaire", created)));
   }
 
   @PutMapping("/{id}")
-  public AnneeScolaire update(@PathVariable Long id, @RequestBody AnneeScolaire anneeScolaire) {
-    return anneeScolaireService.update(id, anneeScolaire);
+  public ApiResponse<Map<String, AnneeScolaire>> update(@PathVariable Long id, @RequestBody AnneeScolaire anneeScolaire) {
+    return ApiResponse.success(Map.of("anneeScolaire", anneeScolaireService.update(id, anneeScolaire)));
   }
 
   @DeleteMapping("/{id}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void delete(@PathVariable Long id) {
+  public ResponseEntity<ApiResponse<Map<String, Object>>> delete(@PathVariable Long id) {
     anneeScolaireService.delete(id);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(ApiResponse.success(Map.of("anneeScolaire", Map.of("id", id))));
   }
 }

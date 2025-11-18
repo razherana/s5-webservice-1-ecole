@@ -42,8 +42,8 @@ CREATE TABLE unite_enseignement (
     credits INTEGER,
     groupe_id INTEGER NOT NULL,
     semestre_id INTEGER NOT NULL,
-    FOREIGN KEY (groupe_id) REFERENCES groupe_matiere(id),
-    FOREIGN KEY (semestre_id) REFERENCES semestre(id)
+    FOREIGN KEY (groupe_id) REFERENCES groupe_matiere (id),
+    FOREIGN KEY (semestre_id) REFERENCES semestre (id)
 );
 
 CREATE TABLE inscription (
@@ -52,9 +52,9 @@ CREATE TABLE inscription (
     annee_scolaire_id INTEGER NOT NULL,
     semestre_id INTEGER NOT NULL,
     etudiant_id INTEGER NOT NULL,
-    FOREIGN KEY (annee_scolaire_id) REFERENCES annee_scolaire(id),
-    FOREIGN KEY (semestre_id) REFERENCES semestre(id),
-    FOREIGN KEY (etudiant_id) REFERENCES etudiant(id)
+    FOREIGN KEY (annee_scolaire_id) REFERENCES annee_scolaire (id),
+    FOREIGN KEY (semestre_id) REFERENCES semestre (id),
+    FOREIGN KEY (etudiant_id) REFERENCES etudiant (id)
 );
 
 CREATE TABLE notes (
@@ -63,7 +63,13 @@ CREATE TABLE notes (
     inscription_id INTEGER NOT NULL,
     session_id INTEGER NOT NULL,
     unite_id INTEGER NOT NULL,
-    FOREIGN KEY (inscription_id) REFERENCES inscription(id),
-    FOREIGN KEY (session_id) REFERENCES session(id),
-    FOREIGN KEY (unite_id) REFERENCES unite_enseignement(id)
+    FOREIGN KEY (inscription_id) REFERENCES inscription (id),
+    FOREIGN KEY (session_id) REFERENCES session (id),
+    FOREIGN KEY (unite_id) REFERENCES unite_enseignement (id)
+);
+
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL
 );

@@ -17,6 +17,7 @@ import mg.razherana.notes.security.JwtUtil;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -35,6 +36,9 @@ public class AuthController {
       return ResponseEntity.ok(ApiResponse.success(Map.of("token", token)));
     } catch (BadCredentialsException ex) {
       throw new ApiException(HttpStatus.UNAUTHORIZED, "INVALID_CREDENTIALS", "Invalid username or password", null);
+    } catch (HttpMessageNotReadableException ex) {
+      throw new ApiException(HttpStatus.INTERNAL_SERVER_ERROR, "MISSING_REQUIRED_BODY",
+          "Request body is missing or malformed", null);
     }
   }
 }

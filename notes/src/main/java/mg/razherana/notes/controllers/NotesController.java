@@ -31,6 +31,17 @@ public class NotesController {
     return ApiResponse.success(Map.of("notes", notesService.findAll()));
   }
 
+  @GetMapping("/semestres/{semestreId}")
+  public ApiResponse<Map<String, List<Notes>>> getBySemestre(@PathVariable Long semestreId) {
+    return ApiResponse.success(Map.of("notes", notesService.findBySemestre(semestreId)));
+  }
+
+  @GetMapping("/semestres/{semestreId}/etudiants/{etudiantId}")
+  public ApiResponse<Map<String, List<Notes>>> getBySemestreAndEtudiant(@PathVariable Long semestreId,
+      @PathVariable Long etudiantId) {
+    return ApiResponse.success(Map.of("notes", notesService.findBySemestreAndEtudiant(semestreId, etudiantId)));
+  }
+
   @GetMapping("/{id}")
   public ApiResponse<Map<String, Notes>> getById(@PathVariable Long id) {
     return ApiResponse.success(Map.of("note", notesService.findById(id)));

@@ -16,7 +16,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user", schema = "public")
+@Table(name = "users", schema = "public")
 @Data
 @NoArgsConstructor
 public class User implements UserDetails {

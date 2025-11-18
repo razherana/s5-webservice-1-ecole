@@ -2,6 +2,8 @@ package mg.razherana.notes.entities;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,20 +21,22 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Semestre {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(nullable = false, length = 50)
-    private String libelle;
-    
-    @Column(nullable = false, length = 50)
-    private String annee;
-    
-    @OneToMany(mappedBy = "semestre", fetch = jakarta.persistence.FetchType.LAZY)
-    private List<UniteEnseignement> unites;
-    
-    @OneToMany(mappedBy = "semestre", fetch = jakarta.persistence.FetchType.LAZY)
-    private List<Inscription> inscriptions;
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column(nullable = false, length = 50)
+  private String libelle;
+
+  @Column(nullable = false, length = 50)
+  private String annee;
+
+  @OneToMany(mappedBy = "semestre", fetch = jakarta.persistence.FetchType.LAZY)
+  @JsonIgnore
+  private List<UniteEnseignement> unites;
+
+  @OneToMany(mappedBy = "semestre", fetch = jakarta.persistence.FetchType.LAZY)
+  @JsonIgnore
+  private List<Inscription> inscriptions;
 }

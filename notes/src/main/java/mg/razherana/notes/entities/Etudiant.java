@@ -3,6 +3,8 @@ package mg.razherana.notes.entities;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,5 +38,6 @@ public class Etudiant {
     private LocalDate dateNaissance;
     
     @OneToMany(mappedBy = "etudiant", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Inscription> inscriptions;
 }

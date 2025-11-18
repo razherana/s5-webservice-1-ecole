@@ -7,14 +7,18 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import mg.razherana.notes.api.ApiException;
+import mg.razherana.notes.entities.Etudiant;
 import mg.razherana.notes.entities.Inscription;
 import mg.razherana.notes.entities.Notes;
+import mg.razherana.notes.entities.Semestre;
 import mg.razherana.notes.entities.Session;
 import mg.razherana.notes.entities.UniteEnseignement;
 import mg.razherana.notes.repositories.InscriptionRepository;
 import mg.razherana.notes.repositories.NotesRepository;
 import mg.razherana.notes.repositories.SessionRepository;
 import mg.razherana.notes.repositories.UniteEnseignementRepository;
+import mg.razherana.notes.repositories.EtudiantRepository;
+import mg.razherana.notes.repositories.SemestreRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +28,8 @@ public class NotesService {
   private final InscriptionRepository inscriptionRepository;
   private final SessionRepository sessionRepository;
   private final UniteEnseignementRepository uniteEnseignementRepository;
+  private final SemestreRepository semestreRepository;
+  private final EtudiantRepository etudiantRepository;
 
   public List<Notes> findAll() {
     return notesRepository.findAll();
@@ -57,6 +63,17 @@ public class NotesService {
   public void delete(Long id) {
     Notes existing = findById(id);
     notesRepository.delete(existing);
+  }
+
+  public List<Notes> findBySemestre(Long semestreId) {
+    resolveSemestre(semestreId);
+    return notesRepository.findByInscriptionSemestreId(semestreId);
+  }
+
+  public List<Notes> findBySemestreAndEtudiant(Long semestreId, Long etudiantId) {
+    resolveSemestre(semestreId);
+    resolveEtudiant(etudiantId);
+    return notesRepository.findByInscriptionSemestreIdAndInscriptionEtudiantId(semestreId, etudiantId);
   }
 
   private void validateValeur(Integer valeur) {
@@ -95,5 +112,23 @@ public class NotesService {
     return uniteEnseignementRepository.findById(unite.getId())
         .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "UNITE_NOT_FOUND",
             "Unite d'enseignement " + unite.getId() + " not found", unite.getId()));
+  }
+
+  private Semestre resolveSemestre(Long semestreId) {
+    if (semestreId == null) {
+      throw new ApiException(HttpStatus.BAD_REQUEST, "SEMESTRE_REQUIRED", "semestre is required", null);
+    }
+    return semestreRepository.findById(semestreId)
+        .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "SEMESTRE_NOT_FOUND",
+            "Semestre " + semestreId + " not found", semestreId));
+  }
+
+  private Etudiant resolveEtudiant(Long etudiantId) {
+    if (etudiantId == null) {
+      throw new ApiException(HttpStatus.BAD_REQUEST, "ETUDIANT_REQUIRED", "etudiant is required", null);
+    }
+    return etudiantRepository.findById(etudiantId)
+        .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "ETUDIANT_NOT_FOUND",
+            "Etudiant " + etudiantId + " not found", etudiantId));
   }
 }

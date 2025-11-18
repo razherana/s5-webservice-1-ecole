@@ -2,6 +2,8 @@ package mg.razherana.notes.entities;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,28 +24,29 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UniteEnseignement {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(name = "code_matiere", nullable = false, length = 50)
-    private String codeMatiere;
-    
-    @Column(name = "intitule", nullable = false, length = 50)
-    private String intitule;
-    
-    @Column(nullable = true)
-    private Integer credits;
-    
-    @ManyToOne
-    @JoinColumn(name = "groupe_id", nullable = false)
-    private GroupeMatiere groupe;
-    
-    @ManyToOne
-    @JoinColumn(name = "semestre_id", nullable = false)
-    private Semestre semestre;
-    
-    @OneToMany(mappedBy = "unite", fetch = FetchType.LAZY)
-    private List<Notes> notes;
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column(name = "code_matiere", nullable = false, length = 50)
+  private String codeMatiere;
+
+  @Column(name = "intitule", nullable = false, length = 50)
+  private String intitule;
+
+  @Column(nullable = true)
+  private Integer credits;
+
+  @ManyToOne
+  @JoinColumn(name = "groupe_id", nullable = false)
+  private GroupeMatiere groupe;
+
+  @ManyToOne
+  @JoinColumn(name = "semestre_id", nullable = false)
+  private Semestre semestre;
+
+  @OneToMany(mappedBy = "unite", fetch = FetchType.LAZY)
+  @JsonIgnore
+  private List<Notes> notes;
 }

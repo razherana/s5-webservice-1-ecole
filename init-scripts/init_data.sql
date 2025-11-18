@@ -197,3 +197,5 @@ INSERT INTO notes (valeur, inscription_id, session_id, unite_id) VALUES
 -- Notes S6
 (16, 30, 11, 32), (15, 30, 11, 33), (17, 30, 11, 34),
 (15, 31, 11, 32), (16, 31, 11, 33), (18, 31, 11, 34);
+
+INSERT INTO users (username, password) VALUES ('admin', 'admin');

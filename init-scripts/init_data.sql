@@ -45,7 +45,7 @@ INSERT INTO mention_resultat (libelle, moyenne_min, moyenne_max) VALUES
 
 -- Insertion des groupes de matières
 INSERT INTO groupe_matiere (libelle) VALUES
-('Tronc commun fondamental'),
+('Obligatoires'),
 ('Langues et communication'),
 ('Projets et méthodologie'),
 ('Spécialisation Développement'),

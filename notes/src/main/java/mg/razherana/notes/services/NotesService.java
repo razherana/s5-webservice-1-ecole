@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -143,104 +144,70 @@ public class NotesService {
     resolveSemestre(semestreId);
     resolveEtudiant(etudiantId);
 
-    // Get the inscription for this student and semester
     List<Notes> notesList = notesRepository.findByInscriptionSemestreIdAndInscriptionEtudiantId(semestreId, etudiantId);
-    if (notesList.isEmpty()) {
+
+    Map<Long, NoteSummary> bestNotesByUnite = new HashMap<>();
+    for (Notes note : notesList) {
+      if (note == null || note.getUnite() == null || note.getUnite().getId() == null || note.getValeur() == null) {
+        continue;
+      }
+
+      BigDecimal valeur = normalizeValeur(note.getValeur());
+      String sessionLibelle = note.getSession() != null ? note.getSession().getLibelle() : null;
+      Long uniteId = note.getUnite().getId();
+
+      bestNotesByUnite.merge(uniteId, new NoteSummary(valeur, sessionLibelle), (existing, incoming) -> {
+        if (incoming.valeur().compareTo(existing.valeur()) > 0) {
+          return incoming;
+        }
+        return existing;
+      });
+    }
+
+    List<Option> options = optionRepository.findAllWithAssociations(null, semestreId);
+    if (options.isEmpty()) {
       return List.of();
     }
 
-    // Group notes by option
-    Map<Long, StudentOptionDetailDto> optionMap = new LinkedHashMap<>();
-    Map<Long, Map<Long, StudentOptionDetailDto.UniteDetailDto>> unitesByOption = new LinkedHashMap<>();
-
-    for (Notes note : notesList) {
-      if (note.getUnite() == null || note.getInscription() == null || note.getSession() == null) {
-        continue;
-      }
-
-      // Find the option associated with this unite
-      Option option = findOptionForUnite(note.getUnite().getId(), semestreId);
-      if (option == null) {
-        continue;
-      }
-
-      Long optionId = option.getId();
-      if (!optionMap.containsKey(optionId)) {
-        optionMap.put(optionId, new StudentOptionDetailDto(
-            optionId,
-            option.getLibelle(),
-            new ArrayList<>()
-        ));
-        unitesByOption.put(optionId, new LinkedHashMap<>());
-      }
-
-      // Find the OptionUniteEnseignement for credits and group info
-      OptionUniteEnseignement optionUnite = findOptionUniteEnseignement(optionId, note.getUnite().getId());
-      int credits = optionUnite != null && optionUnite.getCredits() != null ? optionUnite.getCredits() : 0;
-      String groupeLibelle = optionUnite != null && optionUnite.getGroupe() != null
-          ? optionUnite.getGroupe().getLibelle()
-          : "";
-
-      StudentOptionDetailDto.UniteDetailDto uniteDetail = new StudentOptionDetailDto.UniteDetailDto(
-          note.getUnite().getId(),
-          note.getUnite().getCodeMatiere(),
-          note.getUnite().getIntitule(),
-          note.getValeur(),
-          note.getSession().getLibelle(),
-          credits,
-          groupeLibelle
-      );
-
-      // Store by unite ID to avoid duplicates (keep the best note)
-      Map<Long, StudentOptionDetailDto.UniteDetailDto> unitesMap = unitesByOption.get(optionId);
-      if (!unitesMap.containsKey(note.getUnite().getId())) {
-        unitesMap.put(note.getUnite().getId(), uniteDetail);
-      } else {
-        // Keep the highest note for this unite
-        StudentOptionDetailDto.UniteDetailDto existing = unitesMap.get(note.getUnite().getId());
-        if (uniteDetail.note().compareTo(existing.note()) > 0) {
-          unitesMap.put(note.getUnite().getId(), uniteDetail);
-        }
-      }
-    }
-
-    // Build the result
-    for (Map.Entry<Long, StudentOptionDetailDto> entry : optionMap.entrySet()) {
-      List<StudentOptionDetailDto.UniteDetailDto> unites = new ArrayList<>(unitesByOption.get(entry.getKey()).values());
-      StudentOptionDetailDto dto = new StudentOptionDetailDto(
-          entry.getValue().optionId(),
-          entry.getValue().optionLibelle(),
-          unites
-      );
-      optionMap.put(entry.getKey(), dto);
-    }
-
-    return new ArrayList<>(optionMap.values());
-  }
-
-  private Option findOptionForUnite(Long uniteId, Long semestreId) {
-    List<Option> options = optionRepository.findBySemestreId(semestreId);
+    List<StudentOptionDetailDto> results = new ArrayList<>();
     for (Option option : options) {
-      if (option.getOptionUnites() != null) {
-        for (OptionUniteEnseignement optionUnite : option.getOptionUnites()) {
-          if (optionUnite.getUnite() != null && optionUnite.getUnite().getId().equals(uniteId)) {
-            return option;
-          }
-        }
-      }
-    }
-    return null;
-  }
+      List<OptionUniteEnseignement> associations = option.getOptionUnites() != null
+          ? option.getOptionUnites()
+          : List.of();
 
-  private OptionUniteEnseignement findOptionUniteEnseignement(Long optionId, Long uniteId) {
-    Option option = optionRepository.findById(optionId).orElse(null);
-    if (option == null || option.getOptionUnites() == null) {
-      return null;
+      List<StudentOptionDetailDto.UniteDetailDto> uniteDetails = new ArrayList<>();
+      for (OptionUniteEnseignement association : associations) {
+        if (association == null || association.getUnite() == null || association.getUnite().getId() == null) {
+          continue;
+        }
+
+        Long uniteId = association.getUnite().getId();
+        NoteSummary summary = bestNotesByUnite.get(uniteId);
+        BigDecimal noteValeur = summary != null ? summary.valeur() : ZERO_NOTE;
+        String sessionLibelle = summary != null ? summary.sessionLibelle() : null;
+
+        uniteDetails.add(new StudentOptionDetailDto.UniteDetailDto(
+            uniteId,
+            association.getUnite().getCodeMatiere(),
+            association.getUnite().getIntitule(),
+            noteValeur,
+            sessionLibelle,
+            safeCredits(association.getCredits()),
+            association.getGroupe() != null ? association.getGroupe().getLibelle() : ""
+        ));
+      }
+
+      uniteDetails.sort(Comparator.comparing(StudentOptionDetailDto.UniteDetailDto::codeMatiere,
+          Comparator.nullsLast(String::compareToIgnoreCase)));
+
+      results.add(new StudentOptionDetailDto(
+          option.getId(),
+          option.getLibelle(),
+          uniteDetails
+      ));
     }
-    return option.getOptionUnites().stream()
-        .filter(oue -> oue.getUnite() != null && oue.getUnite().getId().equals(uniteId))
-        .findFirst()
-        .orElse(null);
+
+    return results;
   }
 
   private OptionMoyenneDto buildOptionMoyenne(Option option, List<Inscription> inscriptions) {
@@ -464,5 +431,8 @@ public class NotesService {
     if (annee == null || annee.isBlank()) {
       throw new ApiException(HttpStatus.BAD_REQUEST, "SEMESTRE_ANNEE_REQUIRED", "annee is required", annee);
     }
+  }
+
+  private record NoteSummary(BigDecimal valeur, String sessionLibelle) {
   }
 }

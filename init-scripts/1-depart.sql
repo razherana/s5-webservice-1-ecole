@@ -1,38 +1,38 @@
 CREATE TABLE "etudiant" (
     "id" SERIAL PRIMARY KEY,
-    "nom" "VARCHAR(50)" NOT NULL,
-    "prenom" "VARCHAR(50)" NOT NULL,
+    "nom" VARCHAR(50) NOT NULL,
+    "prenom" VARCHAR(50) NOT NULL,
     "date_naissance" DATE
 );
 
 CREATE TABLE "semestre" (
     "id" SERIAL PRIMARY KEY,
-    "libelle" "VARCHAR(50)" NOT NULL,
-    "annee" "VARCHAR(50)" NOT NULL
+    "libelle" VARCHAR(50) NOT NULL,
+    "annee" VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE "option" (
     "id" SERIAL PRIMARY KEY,
-    "libelle" "VARCHAR(50)" NOT NULL,
+    "libelle" VARCHAR(50) NOT NULL,
     "semestre_id" INTEGER NOT NULL
 );
 
 CREATE TABLE "session" (
     "id" SERIAL PRIMARY KEY,
-    "libelle" "VARCHAR(50)" NOT NULL,
+    "libelle" VARCHAR(50) NOT NULL,
     "date_session" DATE NOT NULL
 );
 
 CREATE TABLE "mention_resultat" (
     "id" SERIAL PRIMARY KEY,
-    "libelle" "VARCHAR(50)" NOT NULL,
+    "libelle" VARCHAR(50) NOT NULL,
     "moyenne_min" INTEGER NOT NULL,
     "moyenne_max" INTEGER NOT NULL
 );
 
 CREATE TABLE "groupe_matiere" (
     "id" SERIAL PRIMARY KEY,
-    "libelle" "VARCHAR(50)"
+    "libelle" VARCHAR(50)
 );
 
 CREATE TABLE "annee_scolaire" (
@@ -43,8 +43,8 @@ CREATE TABLE "annee_scolaire" (
 
 CREATE TABLE "unite_enseignement" (
     "id" SERIAL PRIMARY KEY,
-    "code_matiere" "VARCHAR(50)" NOT NULL,
-    "intitule" "VARCHAR(50)" NOT NULL
+    "code_matiere" VARCHAR(50) NOT NULL,
+    "intitule" VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE "option_unite_enseignement" (
@@ -73,8 +73,8 @@ CREATE TABLE "notes" (
 
 CREATE TABLE "users" (
     "id" SERIAL PRIMARY KEY,
-    "username" "VARCHAR(50)" UNIQUE NOT NULL,
-    "password" "VARCHAR(100)" NOT NULL
+    "username" VARCHAR(50) UNIQUE NOT NULL,
+    "password" VARCHAR(100) NOT NULL
 );
 
 ALTER TABLE "option"

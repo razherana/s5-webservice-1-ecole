@@ -1,201 +1,348 @@
--- Insertion des étudiants
-INSERT INTO etudiant (nom, prenom, date_naissance) VALUES
-('Martin', 'Jean', '2000-05-15'),
-('Dubois', 'Marie', '2001-08-22'),
-('Bernard', 'Pierre', '2000-12-03'),
-('Thomas', 'Sophie', '2001-03-18'),
-('Robert', 'Lucas', '2000-07-29'),
-('Richard', 'Emma', '2001-11-14'),
-('Petit', 'Hugo', '2000-02-09'),
-('Durand', 'Léa', '2001-06-25'),
-('Leroy', 'Nathan', '2000-09-30'),
-('Moreau', 'Chloé', '2001-04-12');
-
--- Insertion des semestres (L1, L2, L3)
-INSERT INTO semestre (libelle, annee) VALUES
+-- Insert semesters
+INSERT INTO "semestre" ("libelle", "annee") VALUES
 ('Semestre 1', 'L1'),
 ('Semestre 2', 'L1'),
-('Semestre 3', 'L2'),
+('Semestre 3', 'L2');
+
+-- Insert academic years (assuming current year)
+INSERT INTO "annee_scolaire" ("annee1", "annee2") VALUES
+('2024-09-01', '2025-06-30'),
+('2025-09-01', '2026-06-30');
+
+-- Insert course groups (for obligatory courses)
+INSERT INTO "groupe_matiere" ("libelle") VALUES
+('Obligatoire');
+
+-- Insert result mentions
+INSERT INTO "mention_resultat" ("libelle", "moyenne_min", "moyenne_max") VALUES
+('Très Bien', 16, 20),
+('Bien', 14, 15),
+('Assez Bien', 12, 13),
+('Passable', 10, 11),
+('Ajourné', 0, 9);
+
+-- Insert exam sessions
+INSERT INTO "session" ("libelle", "date_session") VALUES
+('Session Normale', '2025-01-15'),
+('Session Finale', '2025-02-20');
+
+-- Insert course units for Semester 1
+INSERT INTO "unite_enseignement" ("code_matiere", "intitule") VALUES
+('INF101', 'Programmation procédurale'),
+('INF104', 'HTML et Introduction au Web'),
+('INF107', 'Informatique de Base'),
+('MTH101', 'Arithmétique et nombres'),
+('MTH102', 'Analyse mathématique'),
+('ORG101', 'Techniques de communication');
+
+-- Insert course units for Semester 2
+INSERT INTO "unite_enseignement" ("code_matiere", "intitule") VALUES
+('INF102', 'Bases de données relationnelles'),
+('INF103', 'Bases de l\'administration système'),
+('INF105', 'Maintenance matériel et logiciel'),
+('INF106', 'Compléments de programmation'),
+('MTH103', 'Calcul Vectoriel et Matriciel'),
+('MTH105', 'Probabilité et Statistique');
+
+-- Insert course units for Semester 3
+INSERT INTO "unite_enseignement" ("code_matiere", "intitule") VALUES
+('INF201', 'Programmation orientée objet'),
+('INF202', 'Bases de données objets'),
+('INF203', 'Programmation système'),
+('INF208', 'Réseaux informatiques'),
+('MTH201', 'Méthodes numériques'),
+('ORG201', 'Bases de gestion');
+
+-- Insert options for each semester
+INSERT INTO "option" ("libelle", "semestre_id") VALUES
+('Connaissances Scientifiques et Techniques de Base', 1),
+('Connaissances Scientifiques et Techniques de Base', 2),
+('Connaissances Scientifiques et Techniques de Base', 3);
+
+-- Link course units to Option for Semester 1 with credits
+INSERT INTO "option_unite_enseignement" ("option_id", "unite_enseignement_id", "credits", "groupe_id") VALUES
+-- Semester 1 courses (option_id = 1)
+(1, 1, 7, 1),  -- INF101
+(1, 2, 5, 1),  -- INF104
+(1, 3, 4, 1),  -- INF107
+(1, 4, 4, 1),  -- MTH101
+(1, 5, 6, 1),  -- MTH102
+(1, 6, 4, 1),  -- ORG101
+
+-- Semester 2 courses (option_id = 2)
+(2, 7, 5, 1),  -- INF102
+(2, 8, 5, 1),  -- INF103
+(2, 9, 4, 1),  -- INF105
+(2, 10, 6, 1), -- INF106
+(2, 11, 6, 1), -- MTH103
+(2, 12, 4, 1), -- MTH105
+
+-- Semester 3 courses (option_id = 3)
+(3, 13, 6, 1), -- INF201
+(3, 14, 6, 1), -- INF202
+(3, 15, 4, 1), -- INF203
+(3, 16, 6, 1), -- INF208
+(3, 17, 4, 1), -- MTH201
+(3, 18, 4, 1); -- ORG201
+
+INSERT INTO "semestre" ("libelle", "annee") VALUES
 ('Semestre 4', 'L2'),
 ('Semestre 5', 'L3'),
 ('Semestre 6', 'L3');
 
--- Insertion des sessions d'examen
-INSERT INTO session (libelle, date_session) VALUES
-('Session principale S1', '2024-01-15'),
-('Session rattrapage S1', '2024-02-20'),
-('Session principale S2', '2024-06-10'),
-('Session rattrapage S2', '2024-07-05'),
-('Session principale S3', '2025-01-12'),
-('Session rattrapage S3', '2025-02-18'),
-('Session principale S4', '2025-06-09'),
-('Session rattrapage S4', '2025-07-04'),
-('Session principale S5', '2026-01-11'),
-('Session rattrapage S5', '2026-02-16'),
-('Session principale S6', '2026-06-08'),
-('Session rattrapage S6', '2026-07-03');
+-- Option DEV
 
--- Insertion des mentions de résultat
-INSERT INTO mention_resultat (libelle, moyenne_min, moyenne_max) VALUES
-('Très bien', 16, 20),
-('Bien', 14, 15),
-('Assez bien', 12, 13),
-('Passable', 10, 11),
-('Insuffisant', 0, 9);
+-- Insert course groups for optional courses
+INSERT INTO "groupe_matiere" ("libelle") VALUES
+('Groupe 1 - S4: 1 UE parmi SIG/SI/IHM'),
+('Groupe 2 - S4: 1 UE parmi Géométrie/EquaDiff/Optimisation'),
+('Groupe 3 - S6: 1 UE parmi Technologies réseaux/Multimédia');
 
--- Insertion des groupes de matières
-INSERT INTO groupe_matiere (libelle) VALUES
-('Obligatoires'),
-('Langues et communication'),
-('Projets et méthodologie'),
-('Spécialisation Développement'),
-('Spécialisation Data Science'),
-('Spécialisation Réseaux'),
-('Options transversales'),
-('Projets avancés et stage');
+-- Insert course units for Semester 4
+INSERT INTO "unite_enseignement" ("code_matiere", "intitule") VALUES
+-- Group 1 courses (1 UE parmi)
+('INF204', 'Système d\'information géographique'),
+('INF205', 'Système d\'information'),
+('INF206', 'Interface Homme/Machine'),
+-- Obligatory courses
+('INF207', 'Eléments d\'algorithmique'),
+('INF210', 'Mini-projet de développement'),
+-- Group 2 courses (1 UE parmi)
+('MTH204', 'Géométrie'),
+('MTH205', 'Equations différentielles'),
+('MTH206', 'Optimisation'),
+-- Obligatory course
+('MTH203', 'MAO');
 
--- Insertion des années scolaires
-INSERT INTO annee_scolaire (annee1, annee2) VALUES
-('2023-09-01', '2024-08-31'),
-('2024-09-01', '2025-08-31'),
-('2025-09-01', '2026-08-31');
+-- Insert course units for Semester 5
+INSERT INTO "unite_enseignement" ("code_matiere", "intitule") VALUES
+('INF301', 'Architecture logicielle'),
+('INF304', 'Développement pour mobiles'),
+('INF307', 'Conception en modèle orienté objet'),
+('ORG301', 'Gestion d\'entreprise'),
+('ORG302', 'Gestion de projets'),
+('ORG303', 'Anglais pour les affaires');
 
--- Insertion des unités d'enseignement
-INSERT INTO unite_enseignement (code_matiere, intitule, credits, groupe_id, semestre_id) VALUES
--- L1 Semestre 1 (Tous obligatoires)
-('INF101', 'Algorithmique', 6, 1, 1),
-('MAT101', 'Mathématiques discrètes', 5, 1, 1),
-('ANG101', 'Anglais technique', 3, 2, 1),
-('COM101', 'Communication', 2, 2, 1),
-('PRO101', 'Projet initiation', 4, 3, 1),
+-- Insert course units for Semester 6
+INSERT INTO "unite_enseignement" ("code_matiere", "intitule") VALUES
+('INF310', 'Codage'),
+('INF313', 'Programmation avancée, frameworks'),
+-- Group 3 courses (1 UE parmi)
+('INF302', 'Technologies d\'accès aux réseaux'),
+('INF303', 'Multimédia'),
+-- Obligatory courses
+('INF316', 'Projet de développement'),
+('ORG304', 'Communication d\'entreprise');
 
--- L1 Semestre 2 (Tous obligatoires)
-('INF102', 'Programmation Java', 6, 1, 2),
-('MAT102', 'Algèbre linéaire', 5, 1, 2),
-('WEB102', 'Développement web', 4, 1, 2),
-('ESP102', 'Espagnol', 3, 2, 2),
-('PRO102', 'Projet applicatif', 4, 3, 2),
+-- Insert options for each semester
+INSERT INTO "option" ("libelle", "semestre_id") VALUES
+('Développement', 4),  -- S4
+('Développement', 5),  -- S5
+('Développement', 6);  -- S6
 
--- L2 Semestre 3 (Tous obligatoires)
-('INF201', 'Bases de données', 6, 1, 3),
-('MAT201', 'Probabilités', 5, 1, 3),
-('RES201', 'Réseaux', 4, 1, 3),
-('ANG201', 'Anglais avancé', 3, 2, 3),
-('PRO201', 'Projet tutoré', 4, 3, 3),
+-- Link course units to Option for Semester 4 with credits and groups
+INSERT INTO "option_unite_enseignement" ("option_id", "unite_enseignement_id", "credits", "groupe_id") VALUES
+-- Semester 4 - Group 1 courses (1 UE parmi: INF204/INF205/INF206)
+(4, 19, 6, 2),  -- INF204
+(4, 20, 6, 2),  -- INF205
+(4, 21, 6, 2),  -- INF206
+-- Semester 4 - Obligatory courses
+(4, 22, 6, 1),  -- INF207
+(4, 23, 10, 1), -- INF210
+-- Semester 4 - Group 2 courses (1 UE parmi: MTH204/MTH205/MTH206)
+(4, 24, 4, 3),  -- MTH204
+(4, 25, 4, 3),  -- MTH205
+(4, 26, 4, 3),  -- MTH206
+-- Semester 4 - Obligatory course
+(4, 27, 4, 1);  -- MTH203
 
--- L2 Semestre 4 (Avec options)
--- Tronc commun obligatoire
-('INF202', 'Architecture logicielle', 5, 1, 4),
-('GES202', 'Gestion de projet', 3, 1, 4),
+-- Link course units to Option for Semester 5 with credits (all obligatory)
+INSERT INTO "option_unite_enseignement" ("option_id", "unite_enseignement_id", "credits", "groupe_id") VALUES
+-- Semester 5 courses (all obligatory)
+(5, 28, 6, 1),  -- INF301
+(5, 29, 6, 1),  -- INF304
+(5, 30, 6, 1),  -- INF307
+(5, 31, 5, 1),  -- ORG301
+(5, 32, 4, 1),  -- ORG302
+(5, 33, 3, 1);  -- ORG303
 
--- Options de spécialisation (1 groupe à choisir parmi 4, 5, 6)
-('WEB202', 'Développement web avancé', 4, 4, 4),
-('MOB202', 'Développement mobile', 4, 4, 4),
-('DEV202', 'Patterns de conception', 4, 4, 4),
+-- Link course units to Option for Semester 6 with credits and groups
+INSERT INTO "option_unite_enseignement" ("option_id", "unite_enseignement_id", "credits", "groupe_id") VALUES
+-- Semester 6 - Obligatory courses
+(6, 34, 4, 1),  -- INF310
+(6, 35, 6, 1),  -- INF313
+(6, 38, 10, 1), -- INF316
+(6, 39, 4, 1),  -- ORG304
+-- Semester 6 - Group 3 courses (1 UE parmi: INF302/INF303)
+(6, 36, 6, 4),  -- INF302
+(6, 37, 6, 4);  -- INF303
 
-('STA202', 'Statistiques avancées', 4, 5, 4),
-('ML202', 'Machine Learning', 4, 5, 4),
-('VIS202', 'Visualisation données', 4, 5, 4),
+-- Option BDD et Reseau
+-- Insert course groups for optional courses (adding to existing groups)
+INSERT INTO "groupe_matiere" ("libelle") VALUES
+('Groupe 5 - S4: 1 UE parmi SIG/IHM/Algorithmique'),
+('Groupe 6 - S4: 1 UE parmi Analyse données/EquaDiff/Optimisation'),
+('Groupe 7 - S6: 1 UE parmi Multimédia/Développement mobile');
 
-('SEC202', 'Sécurité réseaux', 4, 6, 4),
-('CLO202', 'Cloud computing', 4, 6, 4),
-('ADM202', 'Admin systèmes', 4, 6, 4),
+-- Insert course units for Semester 4 (BDR)
+INSERT INTO "unite_enseignement" ("code_matiere", "intitule") VALUES
+-- Already exists: ('INF205', 'Système d\'information'),
+-- Group 5 courses (1 UE parmi) - some may already exist
+-- ('INF204', 'Système d\'information géographique'), -- exists
+-- ('INF206', 'Interface Homme/Machine'), -- exists
+-- ('INF207', 'Eléments d\'algorithmique'), -- exists
+('INF211', 'Mini-projet de bases de données et/ou de réseaux'),
+-- Group 6 courses (1 UE parmi) - some may already exist
+('MTH202', 'Analyse des données');
+-- ('MTH205', 'Equations différentielles'), -- exists
+-- ('MTH206', 'Optimisation'), -- exists
+-- ('MTH203', 'MAO') -- exists
 
--- Options transversales
-('ALL202', 'Allemand', 3, 7, 4),
-('DRO202', 'Droit numérique', 3, 7, 4),
+-- Insert course units for Semester 5 (BDR)
+INSERT INTO "unite_enseignement" ("code_matiere", "intitule") VALUES
+('INF305', 'Gestion de domaines, clustering'),
+('INF308', 'Conception en modèle relationnel');
+-- Already exist: 
+-- ('INF302', 'Technologies d\'accès aux réseaux'),
+-- ('ORG301', 'Gestion d\'entreprise'),
+-- ('ORG302', 'Gestion de projets'),
+-- ('ORG303', 'Anglais pour les affaires')
 
--- Projet obligatoire
-('PPE202', 'Projet personnel encadré', 6, 8, 4),
+-- Insert course units for Semester 6 (BDR)
+INSERT INTO "unite_enseignement" ("code_matiere", "intitule") VALUES
+('INF311', 'Datawarehouse et datamining'),
+('INF314', 'Bases de données avancées'),
+('INF317', 'Projet de Bases de données et/ou de réseaux');
+-- Already exist:
+-- ('INF303', 'Multimédia'),
+-- ('INF304', 'Développement pour mobiles'),
+-- ('ORG304', 'Communication d\'entreprise')
 
--- L3 Semestre 5
-('IA301', 'Intelligence artificielle', 6, 1, 5),
-('SEC301', 'Cybersécurité', 5, 1, 5),
-('PRO301', 'Projet avancé', 6, 8, 5),
-('OPT301', 'Option libre', 4, 7, 5),
+-- Insert options for BDR parcours
+INSERT INTO "option" ("libelle", "semestre_id") VALUES
+('Bases de Données et Réseaux', 4),  -- S4
+('Bases de Données et Réseaux', 5),  -- S5
+('Bases de Données et Réseaux', 6);  -- S6
 
--- L3 Semestre 6
-('ARCH302', 'Architecture cloud', 6, 1, 6),
-('GES302', 'Management', 4, 1, 6),
-('STAGE302', 'Stage professionnel', 12, 8, 6);
+-- Link course units to Option for Semester 4 (BDR) with credits and groups
+INSERT INTO "option_unite_enseignement" ("option_id", "unite_enseignement_id", "credits", "groupe_id") VALUES
+-- Semester 4 - Obligatory course
+(7, 20, 6, 1),  -- INF205 (Système d'information)
+-- Semester 4 - Group 5 courses (1 UE parmi: INF204/INF206/INF207)
+(7, 19, 6, 5),  -- INF204
+(7, 21, 6, 5),  -- INF206
+(7, 22, 6, 5),  -- INF207
+-- Semester 4 - Obligatory course
+(7, 40, 10, 1), -- INF211 (Mini-projet)
+-- Semester 4 - Group 6 courses (1 UE parmi: MTH202/MTH205/MTH206)
+(7, 41, 4, 6),  -- MTH202 (Analyse des données)
+(7, 25, 4, 6),  -- MTH205
+(7, 26, 4, 6),  -- MTH206
+-- Semester 4 - Obligatory course
+(7, 27, 4, 1);  -- MTH203
 
--- Insertion des inscriptions
-INSERT INTO inscription (date_inscription, annee_scolaire_id, semestre_id, etudiant_id) VALUES
--- L1 S1
-('2023-09-05', 1, 1, 1),
-('2023-09-05', 1, 1, 2),
-('2023-09-06', 1, 1, 3),
-('2023-09-06', 1, 1, 4),
-('2023-09-07', 1, 1, 5),
-('2023-09-07', 1, 1, 6),
+-- Link course units to Option for Semester 5 (BDR) with credits (all obligatory)
+INSERT INTO "option_unite_enseignement" ("option_id", "unite_enseignement_id", "credits", "groupe_id") VALUES
+-- Semester 5 courses (all obligatory)
+(8, 36, 6, 1),  -- INF302 (Technologies d'accès aux réseaux)
+(8, 42, 6, 1),  -- INF305 (Gestion de domaines, clustering)
+(8, 43, 6, 1),  -- INF308 (Conception en modèle relationnel)
+(8, 31, 5, 1),  -- ORG301
+(8, 32, 4, 1),  -- ORG302
+(8, 33, 3, 1);  -- ORG303
 
--- L1 S2
-('2024-01-08', 1, 2, 1),
-('2024-01-08', 1, 2, 2),
-('2024-01-09', 1, 2, 3),
-('2024-01-09', 1, 2, 4),
-('2024-01-10', 1, 2, 5),
-('2024-01-10', 1, 2, 6),
+-- Link course units to Option for Semester 6 (BDR) with credits and groups
+INSERT INTO "option_unite_enseignement" ("option_id", "unite_enseignement_id", "credits", "groupe_id") VALUES
+-- Semester 6 - Obligatory courses
+(9, 44, 4, 1),  -- INF311 (Datawarehouse et datamining)
+(9, 45, 6, 1),  -- INF314 (Bases de données avancées)
+(9, 46, 10, 1), -- INF317 (Projet)
+(9, 39, 4, 1),  -- ORG304
+-- Semester 6 - Group 7 courses (1 UE parmi: INF303/INF304)
+(9, 37, 6, 7),  -- INF303 (Multimédia)
+(9, 29, 6, 7);  -- INF304 (Développement pour mobiles)
 
--- L2 S3
-('2024-09-02', 2, 3, 1),
-('2024-09-02', 2, 3, 2),
-('2024-09-03', 2, 3, 3),
-('2024-09-03', 2, 3, 4),
-('2024-09-04', 2, 3, 5),
-('2024-09-04', 2, 3, 6),
+-- Option WEB
+-- Insert course groups for optional courses (adding to existing groups)
+INSERT INTO "groupe_matiere" ("libelle") VALUES
+('Groupe 8 - S4: 1 UE parmi SIG/SI/IHM'),
+('Groupe 9 - S4: 1 UE parmi Analyse données/Géométrie/Optimisation'),
+('Groupe 10 - S6: 1 UE parmi Technologies réseaux/Développement mobile');
 
--- L2 S4
-('2025-01-06', 2, 4, 1),
-('2025-01-06', 2, 4, 2),
-('2025-01-07', 2, 4, 3),
-('2025-01-07', 2, 4, 4),
-('2025-01-08', 2, 4, 5),
-('2025-01-08', 2, 4, 6),
+-- Insert course units for Semester 4 (Web et Design)
+INSERT INTO "unite_enseignement" ("code_matiere", "intitule") VALUES
+('INF209', 'Web dynamique'),
+('INF212', 'Mini-projet de Web et design');
+-- Already exist from previous parcours:
+-- ('INF204', 'Système d\'information géographique'),
+-- ('INF205', 'Système d\'information'),
+-- ('INF206', 'Interface Homme/Machine'),
+-- ('MTH202', 'Analyse des données'),
+-- ('MTH204', 'Géométrie'),
+-- ('MTH206', 'Optimisation'),
+-- ('MTH203', 'MAO')
 
--- L3 S5
-('2025-09-01', 3, 5, 1),
-('2025-09-01', 3, 5, 2),
-('2025-09-02', 3, 5, 3),
-('2025-09-02', 3, 5, 4),
-('2025-09-03', 3, 5, 5),
+-- Insert course units for Semester 5 (Web et Design)
+INSERT INTO "unite_enseignement" ("code_matiere", "intitule") VALUES
+('INF306', 'Introduction au cloud'),
+('INF309', 'Web avancé');
+-- Already exist:
+-- ('INF303', 'Multimédia'),
+-- ('ORG301', 'Gestion d\'entreprise'),
+-- ('ORG302', 'Gestion de projets'),
+-- ('ORG303', 'Anglais pour les affaires')
 
--- L3 S6
-('2026-01-05', 3, 6, 1),
-('2026-01-05', 3, 6, 2),
-('2026-01-06', 3, 6, 3),
-('2026-01-06', 3, 6, 4),
-('2026-01-07', 3, 6, 5);
+-- Insert course units for Semester 6 (Web et Design)
+INSERT INTO "unite_enseignement" ("code_matiere", "intitule") VALUES
+('INF312', 'Web design'),
+('INF315', 'Web services'),
+('INF318', 'Projet de Web et design');
+-- Already exist:
+-- ('INF302', 'Technologies d\'accès aux réseaux'),
+-- ('INF304', 'Développement pour mobiles'),
+-- ('ORG304', 'Communication d\'entreprise')
 
--- Insertion des notes
-INSERT INTO notes (valeur, inscription_id, session_id, unite_id) VALUES
--- Notes S1
-(15, 1, 1, 1), (14, 1, 1, 2), (16, 1, 1, 3), (13, 1, 1, 4), (15, 1, 1, 5),
-(12, 2, 1, 1), (11, 2, 1, 2), (14, 2, 1, 3), (15, 2, 1, 4), (13, 2, 1, 5),
-(18, 3, 1, 1), (17, 3, 1, 2), (16, 3, 1, 3), (15, 3, 1, 4), (17, 3, 1, 5),
+-- Insert options for Web et Design parcours
+INSERT INTO "option" ("libelle", "semestre_id") VALUES
+('Web et Design', 4),  -- S4
+('Web et Design', 5),  -- S5
+('Web et Design', 6);  -- S6
 
--- Notes S2
-(14, 7, 3, 6), (13, 7, 3, 7), (15, 7, 3, 8), (12, 7, 3, 9), (16, 7, 3, 10),
-(16, 8, 3, 6), (15, 8, 3, 7), (14, 8, 3, 8), (13, 8, 3, 9), (17, 8, 3, 10),
+-- Link course units to Option for Semester 4 (Web et Design) with credits and groups
+INSERT INTO "option_unite_enseignement" ("option_id", "unite_enseignement_id", "credits", "groupe_id") VALUES
+-- Semester 4 - Group 8 courses (1 UE parmi: INF204/INF205/INF206)
+(10, 19, 6, 8),  -- INF204
+(10, 20, 6, 8),  -- INF205
+(10, 21, 6, 8),  -- INF206
+-- Semester 4 - Obligatory courses
+(10, 47, 6, 1),  -- INF209 (Web dynamique)
+(10, 48, 10, 1), -- INF212 (Mini-projet)
+-- Semester 4 - Group 9 courses (1 UE parmi: MTH202/MTH204/MTH206)
+(10, 41, 4, 9),  -- MTH202 (Analyse des données)
+(10, 24, 4, 9),  -- MTH204 (Géométrie)
+(10, 26, 4, 9),  -- MTH206 (Optimisation)
+-- Semester 4 - Obligatory course
+(10, 27, 4, 1);  -- MTH203
 
--- Notes S3
-(14, 13, 5, 11), (15, 13, 5, 12), (16, 13, 5, 13), (17, 13, 5, 14), (15, 13, 5, 15),
-(13, 14, 5, 11), (14, 14, 5, 12), (15, 14, 5, 13), (16, 14, 5, 14), (14, 14, 5, 15),
+-- Link course units to Option for Semester 5 (Web et Design) with credits (all obligatory)
+INSERT INTO "option_unite_enseignement" ("option_id", "unite_enseignement_id", "credits", "groupe_id") VALUES
+-- Semester 5 courses (all obligatory)
+(11, 37, 6, 1),  -- INF303 (Multimédia)
+(11, 49, 6, 1),  -- INF306 (Introduction au cloud)
+(11, 50, 6, 1),  -- INF309 (Web avancé)
+(11, 31, 5, 1),  -- ORG301
+(11, 32, 4, 1),  -- ORG302
+(11, 33, 3, 1);  -- ORG303
 
--- Notes S4 (avec options différentes)
--- Étudiant 1 - Spécialisation Développement
-(14, 19, 7, 16), (15, 19, 7, 17), (16, 19, 7, 18), (12, 19, 7, 19), (13, 19, 7, 20), (17, 19, 7, 25),
--- Étudiant 2 - Spécialisation Data Science
-(16, 20, 7, 21), (15, 20, 7, 22), (14, 20, 7, 23), (11, 20, 7, 16), (14, 20, 7, 17), (16, 20, 7, 25),
--- Étudiant 3 - Spécialisation Réseaux
-(13, 21, 7, 24), (14, 21, 7, 25), (12, 21, 7, 26), (15, 21, 7, 16), (16, 21, 7, 17), (15, 21, 7, 27),
-
--- Notes S5
-(15, 25, 9, 28), (16, 25, 9, 29), (14, 25, 9, 30), (17, 25, 9, 31),
-(14, 26, 9, 28), (15, 26, 9, 29), (16, 26, 9, 30), (15, 26, 9, 31),
-
--- Notes S6
-(16, 30, 11, 32), (15, 30, 11, 33), (17, 30, 11, 34),
-(15, 31, 11, 32), (16, 31, 11, 33), (18, 31, 11, 34);
+-- Link course units to Option for Semester 6 (Web et Design) with credits and groups
+INSERT INTO "option_unite_enseignement" ("option_id", "unite_enseignement_id", "credits", "groupe_id") VALUES
+-- Semester 6 - Obligatory courses
+(12, 51, 4, 1),  -- INF312 (Web design)
+(12, 52, 6, 1),  -- INF315 (Web services)
+(12, 53, 10, 1), -- INF318 (Projet)
+(12, 39, 4, 1),  -- ORG304
+-- Semester 6 - Group 10 courses (1 UE parmi: INF302/INF304)
+(12, 36, 6, 10), -- INF302 (Technologies d'accès aux réseaux)
+(12, 29, 6, 10); -- INF304 (Développement pour mobiles)
 
 INSERT INTO users (username, password) VALUES ('admin', 'admin');

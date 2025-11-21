@@ -1,4 +1,18 @@
 services:
+  etudiants-vue-app:
+    image: node:20-alpine
+    container_name: etudiants-vue-app
+    working_dir: /app/etudiantsvue
+    volumes:
+      - ./etudiantsvue:/app/etudiantsvue
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npx vite build && cd dist && npx serve -s . -l 5173"
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+
   spring-boot-app:
     build:
       context: .
@@ -16,7 +30,7 @@ services:
 
   postgres:
     image: postgres:13
-    container_name: postgres-db
+    container_name: postgres
     environment:
       - POSTGRES_DB=mydb
       - POSTGRES_USER=postgres

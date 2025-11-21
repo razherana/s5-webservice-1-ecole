@@ -147,7 +147,7 @@ INSERT INTO option_unite_enseignement (option_id, unite_enseignement_id, credits
 (4, 27, 4, 1);  -- MTH203 (obligatoire)
 
 
--- Semestre 5 (option_id 5)
+-- -- Semestre 5 (option_id 5)
 INSERT INTO option_unite_enseignement (option_id, unite_enseignement_id, credits, groupe_id) VALUES
 (5, 10, 6, 1),
 (5, 11, 6, 1),
@@ -193,7 +193,7 @@ INSERT INTO option_unite_enseignement (option_id, unite_enseignement_id, credits
 
 
 
--- Semestre 5 (option_id 8)
+-- -- Semestre 5 (option_id 8)
 INSERT INTO option_unite_enseignement (option_id, unite_enseignement_id, credits, groupe_id) VALUES
 (8, 18, 6, 1),
 (8, 22, 6, 1),
@@ -238,7 +238,7 @@ INSERT INTO option_unite_enseignement (option_id, unite_enseignement_id, credits
 
 
 
--- Semestre 5 (option_id 11)
+-- -- Semestre 5 (option_id 11)
 INSERT INTO option_unite_enseignement (option_id, unite_enseignement_id, credits, groupe_id) VALUES
 (11, 19, 6, 1),
 (11, 30, 6, 1),

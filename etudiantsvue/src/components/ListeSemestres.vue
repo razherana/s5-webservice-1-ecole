@@ -78,12 +78,12 @@ onMounted(() => {
         <div v-for="semestre in semestres" :key="semestre.id" class="border-l-4 border-blue-500 pl-4">
           <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ semestre.annee }} - {{ semestre.libelle }}</h3>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 gap-4">
             <button v-for="option in getOptionsForSemestre(semestre.id)" :key="option.id"
               @click="selectSemestre(semestre)"
               class="py-1 px-6 bg-linear-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 rounded-lg border-2 border-blue-300 transition-all duration-200 transform hover:scale-105 cursor-pointer text-left">
               <div class="flex flex-col">
-                <span class="text-sm text-gray-700 mt-2">{{ option.libelle }}</span>
+                <span class="text-sm text-gray-700">{{ option.libelle }}</span>
               </div>
             </button>
           </div>

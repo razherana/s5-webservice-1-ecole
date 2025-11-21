@@ -3,12 +3,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import axiosInstance from '@/utils/axiosInstance'
 import api from '@/utils/api'
-import type { APIRespone } from '@/types'
-
-interface LoginForm {
-  username: string
-  password: string
-}
+import type { APIRespone, LoginForm } from '@/types'
 
 const form = ref<LoginForm>({
   username: 'admin',

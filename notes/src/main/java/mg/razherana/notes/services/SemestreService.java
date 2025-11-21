@@ -34,8 +34,6 @@ public class SemestreService {
     Semestre existing = findById(id);
     existing.setLibelle(semestre.getLibelle());
     existing.setAnnee(semestre.getAnnee());
-    existing.setUnites(semestre.getUnites());
-    existing.setInscriptions(semestre.getInscriptions());
     return semestreRepository.save(existing);
   }
 

@@ -29,19 +29,14 @@ public class UniteEnseignementService {
 
   public UniteEnseignement create(UniteEnseignement unite) {
     ensureValidCode(null, unite.getCodeMatiere());
-    ensureValidCredits(unite.getCredits());
     return uniteEnseignementRepository.save(unite);
   }
 
   public UniteEnseignement update(Long id, UniteEnseignement unite) {
     UniteEnseignement existing = findById(id);
     ensureValidCode(id, unite.getCodeMatiere());
-    ensureValidCredits(unite.getCredits());
     existing.setCodeMatiere(unite.getCodeMatiere());
     existing.setIntitule(unite.getIntitule());
-    existing.setCredits(unite.getCredits());
-    existing.setGroupe(unite.getGroupe());
-    existing.setSemestre(unite.getSemestre());
     existing.setNotes(unite.getNotes());
     return uniteEnseignementRepository.save(existing);
   }
@@ -63,12 +58,5 @@ public class UniteEnseignementService {
                 "codeMatiere already used by unite d'enseignement " + other.getId(), other.getId());
           }
         });
-  }
-
-  private void ensureValidCredits(Integer credits) {
-    if (credits == null || credits <= 0) {
-      throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_CREDITS",
-          "credits must be greater than 0", credits);
-    }
   }
 }

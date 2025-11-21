@@ -31,5 +31,5 @@ public class GroupeMatiere {
 
   @OneToMany(mappedBy = "groupe", fetch = jakarta.persistence.FetchType.LAZY)
   @JsonIgnore
-  private List<UniteEnseignement> unites;
+  private List<OptionUniteEnseignement> optionAssociations;
 }

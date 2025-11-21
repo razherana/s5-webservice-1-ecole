@@ -36,7 +36,6 @@ public class GroupeMatiereService {
     GroupeMatiere existing = findById(id);
     ensureUniqueLibelle(id, groupeMatiere.getLibelle());
     existing.setLibelle(groupeMatiere.getLibelle());
-    existing.setUnites(groupeMatiere.getUnites());
     return groupeMatiereRepository.save(existing);
   }
 

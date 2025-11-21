@@ -13,3 +13,8 @@ export interface APIRespone<S> {
     details?: { [key: string]: string }
   } | null
 }
+
+export interface LoginForm {
+  username: string
+  password: string
+}

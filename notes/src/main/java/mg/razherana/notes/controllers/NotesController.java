@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import mg.razherana.notes.api.ApiResponse;
 import mg.razherana.notes.entities.Notes;
 import mg.razherana.notes.dto.OptionMoyenneDto;
+import mg.razherana.notes.dto.StudentOptionDetailDto;
 import mg.razherana.notes.services.NotesService;
 
 @RestController
@@ -38,7 +39,7 @@ public class NotesController {
     return ApiResponse.success(Map.of("notes", notesService.findBySemestre(semestreId)));
   }
 
-  @GetMapping({"/semestres/{semestreId}/etudiants/{etudiantId}", "/etudiants/{etudiantId}/semestres/{semestreId}"})
+  @GetMapping({ "/semestres/{semestreId}/etudiants/{etudiantId}", "/etudiants/{etudiantId}/semestres/{semestreId}" })
   public ApiResponse<Map<String, List<Notes>>> getBySemestreAndEtudiant(@PathVariable Long semestreId,
       @PathVariable Long etudiantId) {
     return ApiResponse.success(Map.of("notes", notesService.findBySemestreAndEtudiant(semestreId, etudiantId)));
@@ -56,6 +57,14 @@ public class NotesController {
       @RequestParam(required = false, name = "anneeScolaireId") Long anneeScolaireId) {
     List<OptionMoyenneDto> moyennes = notesService.calculateOptionMoyennes(optionId, semestreId, anneeScolaireId);
     return ApiResponse.success(Map.of("moyennes", moyennes));
+  }
+
+  @GetMapping("/etudiants/{etudiantId}/semestres/{semestreId}/options")
+  public ApiResponse<Map<String, List<StudentOptionDetailDto>>> getStudentOptionsDetails(
+      @PathVariable Long semestreId,
+      @PathVariable Long etudiantId) {
+    List<StudentOptionDetailDto> optionsDetails = notesService.fetchStudentOptionsDetails(semestreId, etudiantId);
+    return ApiResponse.success(Map.of("options", optionsDetails));
   }
 
   @GetMapping("/{id}")

@@ -29,7 +29,7 @@ class SemestreService {
         options: Option[]
       }>
 
-      console.log('Données des options reçues:', responseData)
+      console.log('Données des options reçues:', responseData.data?.options)
 
       return responseData.data?.options || []
     } catch (err: unknown) {

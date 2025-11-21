@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { semestreService } from '@/services'
 import type { Semestre, Option } from '@/types'
 
-const semestres = ref<Semestre[]>([])
 const options = ref<Option[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -12,13 +11,32 @@ const emit = defineEmits<{
   selectSemestre: [semestre: Semestre]
 }>()
 
-const loadSemestres = async () => {
+// Compute unique semestres from options
+const semestres = computed(() => {
+  const semestreMap = new Map<number, Semestre>()
+
+  options.value.forEach(option => {
+    if (option.semestre && !semestreMap.has(option.semestre.id)) {
+      semestreMap.set(option.semestre.id, option.semestre)
+    }
+  })
+
+  // Sort by annee and libelle
+  return Array.from(semestreMap.values()).sort((a, b) => {
+    if (a.annee !== b.annee) {
+      return a.annee.localeCompare(b.annee)
+    }
+    return a.libelle.localeCompare(b.libelle)
+  })
+})
+
+const loadOptions = async () => {
   loading.value = true
   error.value = null
   try {
-    semestres.value = await semestreService.fetchSemestres()
+    options.value = await semestreService.fetchOptions()
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des semestres'
+    const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des options'
     error.value = errorMessage
     console.error('Erreur:', err)
   } finally {
@@ -26,20 +44,15 @@ const loadSemestres = async () => {
   }
 }
 
-const loadOptions = async () => {
-  try {
-    options.value = await semestreService.fetchOptions()
-  } catch (err: unknown) {
-    console.error('Erreur lors du chargement des options:', err)
-  }
-}
-
 const selectSemestre = (semestre: Semestre) => {
   emit('selectSemestre', semestre)
 }
 
+const getOptionsForSemestre = (semestreId: number) => {
+  return options.value.filter(option => option.semestre?.id === semestreId)
+}
+
 onMounted(() => {
-  loadSemestres()
   loadOptions()
 })
 </script>
@@ -66,19 +79,16 @@ onMounted(() => {
           <h3 class="text-lg font-semibold text-gray-800 mb-4">{{ semestre.annee }} - {{ semestre.libelle }}</h3>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <button
-              v-for="option in options.filter(o => o.semestreId === semestre.id)"
-              :key="option.id"
+            <button v-for="option in getOptionsForSemestre(semestre.id)" :key="option.id"
               @click="selectSemestre(semestre)"
-              class="p-6 bg-linear-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 rounded-lg border-2 border-blue-300 transition-all duration-200 transform hover:scale-105 cursor-pointer text-left">
+              class="py-1 px-6 bg-linear-to-br from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 rounded-lg border-2 border-blue-300 transition-all duration-200 transform hover:scale-105 cursor-pointer text-left">
               <div class="flex flex-col">
-                <span class="font-bold text-blue-600">{{ option.code }}</span>
                 <span class="text-sm text-gray-700 mt-2">{{ option.libelle }}</span>
               </div>
             </button>
           </div>
 
-          <div v-if="options.filter(o => o.semestreId === semestre.id).length === 0" class="text-center py-4">
+          <div v-if="getOptionsForSemestre(semestre.id).length === 0" class="text-center py-4">
             <p class="text-gray-500">Aucune option disponible pour ce semestre</p>
           </div>
         </div>

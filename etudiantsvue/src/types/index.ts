@@ -7,8 +7,9 @@ export interface Semestre {
 export interface Option {
   id: number
   libelle: string
-  code: string
-  semestreId: number
+  code?: string
+  semestreId?: number
+  semestre?: Semestre
 }
 
 export interface Etudiant {
@@ -20,6 +21,22 @@ export interface Etudiant {
 
 export interface EtudiantAvecMoyenne extends Etudiant {
   moyenne: number | undefined
+}
+
+export interface UniteDetail {
+  uniteId: number
+  codeMatiere: string
+  intitule: string
+  note: number
+  sessionLibelle: string
+  credits: number
+  groupeLibelle: string
+}
+
+export interface StudentOptionDetail {
+  optionId: number
+  optionLibelle: string
+  unites: UniteDetail[]
 }
 
 export interface APIRespone<S> {

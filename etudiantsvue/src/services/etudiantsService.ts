@@ -1,6 +1,6 @@
 import axiosInstance from '@/utils/axiosInstance'
 import api from '@/utils/api'
-import type { APIRespone, Etudiant, EtudiantAvecMoyenne } from '@/types'
+import type { APIRespone, Etudiant, EtudiantAvecMoyenne, StudentOptionDetail } from '@/types'
 
 class EtudiantsService {
   async fetchEtudiants(): Promise<Etudiant[]> {
@@ -69,6 +69,26 @@ class EtudiantsService {
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error ? err.message : 'Erreur lors du chargement des étudiants avec moyennes'
+      console.error('Erreur:', err)
+      throw new Error(errorMessage)
+    }
+  }
+
+  async fetchStudentOptionsDetails(semestreId: number, etudiantId: number): Promise<StudentOptionDetail[]> {
+    try {
+      const response = await axiosInstance.get(
+        api(`/api/notes/etudiants/${etudiantId}/semestres/${semestreId}/options`)
+      )
+      const responseData = response.data as APIRespone<{
+        options: StudentOptionDetail[]
+      }>
+
+      console.log(`Détails des options reçus pour étudiant ${etudiantId} en semestre ${semestreId}:`, responseData)
+
+      return responseData.data?.options || []
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'Erreur lors du chargement des détails des options'
       console.error('Erreur:', err)
       throw new Error(errorMessage)
     }

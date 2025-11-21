@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import mg.razherana.notes.api.ApiException;
 import mg.razherana.notes.dto.OptionMoyenneDto;
 import mg.razherana.notes.dto.OptionStudentMoyenneDto;
+import mg.razherana.notes.dto.StudentOptionDetailDto;
 import mg.razherana.notes.entities.AnneeScolaire;
 import mg.razherana.notes.entities.Etudiant;
 import mg.razherana.notes.entities.GroupeMatiere;
@@ -136,6 +137,110 @@ public class NotesService {
       results.add(buildOptionMoyenne(option, inscriptions));
     }
     return results;
+  }
+
+  public List<StudentOptionDetailDto> fetchStudentOptionsDetails(Long semestreId, Long etudiantId) {
+    resolveSemestre(semestreId);
+    resolveEtudiant(etudiantId);
+
+    // Get the inscription for this student and semester
+    List<Notes> notesList = notesRepository.findByInscriptionSemestreIdAndInscriptionEtudiantId(semestreId, etudiantId);
+    if (notesList.isEmpty()) {
+      return List.of();
+    }
+
+    // Group notes by option
+    Map<Long, StudentOptionDetailDto> optionMap = new LinkedHashMap<>();
+    Map<Long, Map<Long, StudentOptionDetailDto.UniteDetailDto>> unitesByOption = new LinkedHashMap<>();
+
+    for (Notes note : notesList) {
+      if (note.getUnite() == null || note.getInscription() == null || note.getSession() == null) {
+        continue;
+      }
+
+      // Find the option associated with this unite
+      Option option = findOptionForUnite(note.getUnite().getId(), semestreId);
+      if (option == null) {
+        continue;
+      }
+
+      Long optionId = option.getId();
+      if (!optionMap.containsKey(optionId)) {
+        optionMap.put(optionId, new StudentOptionDetailDto(
+            optionId,
+            option.getLibelle(),
+            new ArrayList<>()
+        ));
+        unitesByOption.put(optionId, new LinkedHashMap<>());
+      }
+
+      // Find the OptionUniteEnseignement for credits and group info
+      OptionUniteEnseignement optionUnite = findOptionUniteEnseignement(optionId, note.getUnite().getId());
+      int credits = optionUnite != null && optionUnite.getCredits() != null ? optionUnite.getCredits() : 0;
+      String groupeLibelle = optionUnite != null && optionUnite.getGroupe() != null
+          ? optionUnite.getGroupe().getLibelle()
+          : "";
+
+      StudentOptionDetailDto.UniteDetailDto uniteDetail = new StudentOptionDetailDto.UniteDetailDto(
+          note.getUnite().getId(),
+          note.getUnite().getCodeMatiere(),
+          note.getUnite().getIntitule(),
+          note.getValeur(),
+          note.getSession().getLibelle(),
+          credits,
+          groupeLibelle
+      );
+
+      // Store by unite ID to avoid duplicates (keep the best note)
+      Map<Long, StudentOptionDetailDto.UniteDetailDto> unitesMap = unitesByOption.get(optionId);
+      if (!unitesMap.containsKey(note.getUnite().getId())) {
+        unitesMap.put(note.getUnite().getId(), uniteDetail);
+      } else {
+        // Keep the highest note for this unite
+        StudentOptionDetailDto.UniteDetailDto existing = unitesMap.get(note.getUnite().getId());
+        if (uniteDetail.note().compareTo(existing.note()) > 0) {
+          unitesMap.put(note.getUnite().getId(), uniteDetail);
+        }
+      }
+    }
+
+    // Build the result
+    for (Map.Entry<Long, StudentOptionDetailDto> entry : optionMap.entrySet()) {
+      List<StudentOptionDetailDto.UniteDetailDto> unites = new ArrayList<>(unitesByOption.get(entry.getKey()).values());
+      StudentOptionDetailDto dto = new StudentOptionDetailDto(
+          entry.getValue().optionId(),
+          entry.getValue().optionLibelle(),
+          unites
+      );
+      optionMap.put(entry.getKey(), dto);
+    }
+
+    return new ArrayList<>(optionMap.values());
+  }
+
+  private Option findOptionForUnite(Long uniteId, Long semestreId) {
+    List<Option> options = optionRepository.findBySemestreId(semestreId);
+    for (Option option : options) {
+      if (option.getOptionUnites() != null) {
+        for (OptionUniteEnseignement optionUnite : option.getOptionUnites()) {
+          if (optionUnite.getUnite() != null && optionUnite.getUnite().getId().equals(uniteId)) {
+            return option;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  private OptionUniteEnseignement findOptionUniteEnseignement(Long optionId, Long uniteId) {
+    Option option = optionRepository.findById(optionId).orElse(null);
+    if (option == null || option.getOptionUnites() == null) {
+      return null;
+    }
+    return option.getOptionUnites().stream()
+        .filter(oue -> oue.getUnite() != null && oue.getUnite().getId().equals(uniteId))
+        .findFirst()
+        .orElse(null);
   }
 
   private OptionMoyenneDto buildOptionMoyenne(Option option, List<Inscription> inscriptions) {

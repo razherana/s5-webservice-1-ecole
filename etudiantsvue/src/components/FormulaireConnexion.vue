@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import axios from 'axios'
 import axiosInstance from '@/utils/axiosInstance'
 import api from '@/utils/api'
+import type { APIRespone } from '@/types'
 
 interface LoginForm {
   username: string
@@ -10,8 +11,8 @@ interface LoginForm {
 }
 
 const form = ref<LoginForm>({
-  username: '',
-  password: ''
+  username: 'admin',
+  password: 'admin'
 })
 
 const loading = ref(false)
@@ -37,7 +38,14 @@ const handleSubmit = async () => {
       password: form.value.password
     })
 
-    const token = response.data.data.token
+    const responseData = response.data as APIRespone<{ token: string }>
+
+    if (responseData.status !== 'success') {
+      error.value = responseData.error?.message || 'Erreur lors de la connexion'
+      return
+    }
+
+    const token = responseData.data!.token
 
     // Store token in localStorage
     localStorage.setItem('authToken', token)

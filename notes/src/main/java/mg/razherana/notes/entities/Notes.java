@@ -1,5 +1,7 @@
 package mg.razherana.notes.entities;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,23 +20,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Notes {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Column(name = "valeur", nullable = false)
-    private Integer valeur;
-    
-    @ManyToOne
-    @JoinColumn(name = "inscription_id", nullable = false)
-    private Inscription inscription;
-    
-    @ManyToOne
-    @JoinColumn(name = "session_id", nullable = false)
-    private Session session;
-    
-    @ManyToOne
-    @JoinColumn(name = "unite_id", nullable = false)
-    private UniteEnseignement unite;
+
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Column(name = "valeur", nullable = false, precision = 5, scale = 2)
+  private BigDecimal valeur;
+
+  @ManyToOne
+  @JoinColumn(name = "inscription_id", nullable = false)
+  private Inscription inscription;
+
+  @ManyToOne
+  @JoinColumn(name = "session_id", nullable = false)
+  private Session session;
+
+  @ManyToOne
+  @JoinColumn(name = "unite_id", nullable = false)
+  private UniteEnseignement unite;
 }

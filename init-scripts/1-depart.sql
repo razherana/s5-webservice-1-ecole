@@ -65,7 +65,7 @@ CREATE TABLE "inscription" (
 
 CREATE TABLE "notes" (
     "id" SERIAL PRIMARY KEY,
-    "valeur" INTEGER NOT NULL,
+    "valeur" NUMERIC(5, 2) NOT NULL,
     "inscription_id" INTEGER NOT NULL,
     "session_id" INTEGER NOT NULL,
     "unite_id" INTEGER NOT NULL

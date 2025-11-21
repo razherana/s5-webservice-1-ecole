@@ -12,11 +12,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import mg.razherana.notes.api.ApiResponse;
 import mg.razherana.notes.entities.Notes;
+import mg.razherana.notes.dto.OptionMoyenneDto;
 import mg.razherana.notes.services.NotesService;
 
 @RestController
@@ -45,6 +47,15 @@ public class NotesController {
   @GetMapping("/semestres/annees/{annee}")
   public ApiResponse<Map<String, List<Notes>>> getBySemestreAnnee(@PathVariable String annee) {
     return ApiResponse.success(Map.of("notes", notesService.findBySemestreAnnee(annee)));
+  }
+
+  @GetMapping("/options/moyennes")
+  public ApiResponse<Map<String, List<OptionMoyenneDto>>> getOptionMoyennes(
+      @RequestParam(required = false) Long optionId,
+      @RequestParam(required = false) Long semestreId,
+      @RequestParam(required = false, name = "anneeScolaireId") Long anneeScolaireId) {
+    List<OptionMoyenneDto> moyennes = notesService.calculateOptionMoyennes(optionId, semestreId, anneeScolaireId);
+    return ApiResponse.success(Map.of("moyennes", moyennes));
   }
 
   @GetMapping("/{id}")

@@ -1,4 +1,4 @@
-package mg.razherana.notes.controllers;
+package mg.razherana.notes.dto;
 
 import lombok.Data;
 

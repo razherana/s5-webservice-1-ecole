@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import mg.razherana.notes.api.ApiException;
 import mg.razherana.notes.api.ApiResponse;
+import mg.razherana.notes.dto.AuthRequest;
 import mg.razherana.notes.security.JwtUtil;
 
 import org.springframework.http.HttpStatus;

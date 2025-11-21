@@ -1,18 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import axiosInstance from '@/utils/axiosInstance'
-import api from '@/utils/api'
-
-interface Etudiant {
-  id: number
-  nom: string
-  prenom: string
-  [key: string]: string | number | boolean | undefined
-}
-
-interface EtudiantAvecMoyenne extends Etudiant {
-  moyenne: number | undefined
-}
+import { etudiantsService } from '@/services'
+import type { EtudiantAvecMoyenne } from '@/types'
 
 interface Props {
   semestreId: number | null
@@ -26,7 +15,7 @@ const etudiants = ref<EtudiantAvecMoyenne[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-const fetchEtudiants = async () => {
+const loadEtudiants = async () => {
   if (!props.semestreId) {
     etudiants.value = []
     return
@@ -35,40 +24,7 @@ const fetchEtudiants = async () => {
   loading.value = true
   error.value = null
   try {
-    const response = await axiosInstance.get(api('/api/etudiants'))
-    etudiants.value = response.data.data.etudiants || []
-
-    // Fetch moyennes for each etudiant in this semestre
-    const etudiantsAvecMoyennes = await Promise.all(
-      etudiants.value.map(async (etudiant) => {
-        try {
-          const notesResponse = await axiosInstance.get(
-            api(`/api/notes/semestres/${props.semestreId}/etudiants/${etudiant.id}`)
-          )
-          const notes = notesResponse.data.data.notes || []
-
-          // Calculate average
-          if (notes.length > 0) {
-            const total = notes.reduce((sum: number, note: { note?: number; valeur?: number }) => {
-              return sum + ((note.note || note.valeur) ?? 0)
-            }, 0)
-            const moyenne = total / notes.length
-            return { ...etudiant, moyenne }
-          }
-          return { ...etudiant, moyenne: 0 }
-        } catch (err) {
-          console.error(`Erreur lors du chargement des notes pour l'étudiant ${etudiant.id}:`, err)
-          return { ...etudiant, moyenne: 0 }
-        }
-      })
-    )
-
-    etudiants.value = etudiantsAvecMoyennes.sort((a, b) => {
-      // Sort by moyenne descending
-      const moyenneA = a.moyenne ?? 0
-      const moyenneB = b.moyenne ?? 0
-      return moyenneB - moyenneA
-    })
+    etudiants.value = await etudiantsService.fetchEtudiantsAvecMoyennes(props.semestreId)
   } catch (err: unknown) {
     const errorMessage = err instanceof Error ? err.message : 'Erreur lors du chargement des étudiants'
     error.value = errorMessage
@@ -87,11 +43,11 @@ const getMoyenneColor = (moyenne: number | undefined) => {
 }
 
 watch(() => props.semestreId, () => {
-  fetchEtudiants()
+  loadEtudiants()
 })
 
 onMounted(() => {
-  fetchEtudiants()
+  loadEtudiants()
 })
 </script>
 
@@ -127,11 +83,8 @@ onMounted(() => {
               </tr>
             </thead>
             <tbody>
-              <tr
-                v-for="etudiant in etudiants"
-                :key="etudiant.id"
-                class="border-b border-gray-200 hover:bg-gray-50 transition-colors"
-              >
+              <tr v-for="etudiant in etudiants" :key="etudiant.id"
+                class="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                 <td class="px-4 py-3 text-gray-800">{{ etudiant.nom }}</td>
                 <td class="px-4 py-3 text-gray-800">{{ etudiant.prenom }}</td>
                 <td class="px-4 py-3 text-right font-bold" :class="getMoyenneColor(etudiant.moyenne)">
